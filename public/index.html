@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Autoškola – testy</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1 class="title" style="text-align: center">Autoškola – testy</h1>
+
+    <div id="testsGrid" class="tests-grid"></div>
+
+    <script src="api.js"></script>
+    <script>
+      const TOTAL_QUESTIONS = 40;
+      const TEST_COUNT = 100;
+
+      async function renderTests() {
+        const stats = await getStats();
+        const grid = document.getElementById("testsGrid");
+        grid.innerHTML = "";
+
+        for (let i = 1; i <= TEST_COUNT; i++) {
+          const s = stats[i];
+          const btn = document.createElement("button");
+          btn.className = "test-btn";
+
+          let label = "Nezačatý";
+          btn.classList.add("neutral");
+
+          if (s) {
+            if (s.correct === TOTAL_QUESTIONS && s.errors === 0) {
+              label = "Pripravený";
+              btn.classList.remove("neutral");
+              btn.classList.add("ready");
+            } else if (s.errors > 0) {
+              label = `Počet chýb: ${s.errors}`;
+              btn.classList.remove("neutral");
+              btn.classList.add("errors");
+            } else if (s.correct > 0) {
+              label = "In progress";
+              btn.classList.remove("neutral");
+              btn.classList.add("progress");
+            }
+          }
+
+          btn.innerHTML = `
+          <div class="test-number">Test ${i}</div>
+          <div class="test-status">${label}</div>
+        `;
+
+          btn.onclick = () => {
+            location.href = `test.html?test=${i}`;
+          };
+
+          grid.appendChild(btn);
+        }
+      }
+
+      renderTests();
+    </script>
+  </body>
+</html>
